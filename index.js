@@ -19,29 +19,36 @@ const writeSheet = require("./sheets");
 // ]).then((res) => {
 //   console.log(res);
 // });
-
 (async () => {
-  // Generating SubTopics
-  console.log("Generating subtopics:...");
-  const subtopics = await getSubTopics(title);
-  console.log("Subtopics generated:", subtopics);
+  const topic = "Performance Marketing";
 
-  //Scrape Books
-  console.log("Scraping books:...");
-  const books = await getBooks(title);
-  console.log("Books scraped:", books);
+  //Generate Subtopics
+  console.log("Generating subtopics...");
+  const subtopics = await getSubTopics(topic);
+  console.log("Subtopics generated:\n", subtopics);
 
-  //Check Availability
-  const titles = books.map((b) => b.title);
-  const available = await checkBook(titles);
-  console.log(available);
+  const allBookData = [];
 
-  const finalBookData = books.map((b, i) => ({
-    ...b,
-    available: available[i],
-  }));
+  for (let sub of subtopics) {
+    console.log(`Searching books for subtopic: ${sub}`);
+    const books = await getBooks(sub);
 
-  //Wrinting in Sheeets
-  await writeSheet(finalBookData);
-  console.log("Books data written to Google Sheets successfully.");
+    if (!books.length) continue;
+
+    const titles = books.map((b) => b.title);
+    const availability = await checkBook(titles);
+
+    const finalData = books.map((b, i) => ({
+      title: b.title,
+      summary: b.summary,
+      available: availability[i],
+    }));
+
+    allBookData.push(...finalData);
+  }
+
+  //Write all results to Sheets
+  console.log("\nWriting to Google Sheets...");
+  await writeSheet(allBookData);
+  console.log("All done!");
 })();
