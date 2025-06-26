@@ -1,7 +1,10 @@
 const puppeteer = require("puppeteer");
 
 async function getBooks(topic) {
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
   const page = await browser.newPage();
   await page.goto("https://books.google.com/");
   await page.type('input[name="q"]', topic);
