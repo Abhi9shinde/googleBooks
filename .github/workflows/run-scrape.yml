@@ -1,0 +1,35 @@
+name: Google Books
+
+on:
+  workflow_dispatch:  # Allows manual run
+  push:               
+    branches: [main]
+
+jobs:
+  run-scrape:
+    runs-on:ubuntu-latest
+
+    steps:
+    - name: check code
+      uses:actions/checkout@v4
+    
+    - name: setup node
+      uses:actions/setup-node@v4
+      with:
+        node-version: 20
+    
+    - name: Install dependencies
+      run: npm install 
+
+    - name: Create .env file
+      run: |
+        echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> .env
+        echo "SPREADSHEET_ID=${{ secrets.SPREADSHEET_ID }}" >> .env
+    
+    - name: Create credentials file
+      run: |
+        echo "${{ secrets.GOOGLE_CREDENTIALS_JSON_BASE64 }}" | base64 --decode > credentials.json
+    
+    - name: Run the script
+      run: |
+        node index.js

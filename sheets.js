@@ -1,5 +1,5 @@
 const { google } = require("googleapis");
-const fs = require("fs");
+
 require("dotenv").config();
 let credentials = require("./credentials.json");
 

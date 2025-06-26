@@ -1,4 +1,3 @@
-const axios = require("axios");
 const { GoogleGenAI } = require("@google/genai");
 
 require("dotenv").config();
@@ -37,6 +36,7 @@ async function getSubTopics(topic) {
       fullText += chunk.text;
     }
   }
+  console.log("full text is", fullText);
   return fullText.split("\n").filter((line) => line.trim().length > 3);
 }
 
